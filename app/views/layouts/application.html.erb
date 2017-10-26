@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ChessPrep</title>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= yield :js %>
+  </head>
+
+  <body>
+  	<%= flash[:error] %>
+  	<%= flash[:success] %>
+    <%= yield %>
+  </body>
+</html>
