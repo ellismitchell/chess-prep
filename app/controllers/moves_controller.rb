@@ -2,7 +2,7 @@ class MovesController < ApplicationController
 	def next_due_move
 		@move = current_user.moves.min_by {|m| m.due}
 		if !@move or @move.due > DateTime.now
-			redirect_to 'new'
+			render :json => {move: "no move"}
 		else
 			render :json => @move
 		end
@@ -24,7 +24,8 @@ class MovesController < ApplicationController
 			# 	likelihood: @move.likelihood,
 			# 	user: current_user
 			# 	})
-			current_user.positions.delete(Position.find_by(fen: @move.position))
+			
+			Position.where({user: current_user, fen: @move.position}).destroy_all
 		else
 			flash[:error] = "error saving move"
 		end

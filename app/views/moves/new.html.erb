@@ -78,7 +78,6 @@
 			  	}
 			  }
 		  }).then(function(move) {
-		  	window.location.href = '/drill';
 		  });
 	  });
 
@@ -124,10 +123,11 @@
 	  $.ajax({
 	  	url: 'https://expl.lichess.org/master?fen='+game.fen(),
 	  	dataType: "json"
-	  }).then(function(data){
+	  }).then(function(lichessData){
+	  	console.log("bitchin");
 	  	movesEl.empty();
-	  	let total = data.white+data.draws+data.black;
-	  	data.moves.forEach((move) => {
+	  	let total = lichessData.white+lichessData.draws+lichessData.black;
+	  	lichessData.moves.forEach((move) => {
 	  		let moveTotal = move.white+move.draws+move.black;
 	  		let percent = moveTotal/total * 100;
 	  		if (percent > 0.1)
@@ -156,7 +156,8 @@
 
   </script>
 <% end %>
-
+Add a move!
 <div id="board" style="width: 600px"></div>
 <p>Status: <span id="status"></span></p>
 <p>Fen: <span id="fen"></span></p>
+<div id="moves"></div>

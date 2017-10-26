@@ -5,6 +5,10 @@
 	drillNextMove();
 });
    function renderBoard(data) {
+   	if (data.move == "no move"){
+   		console.log("should redirect to new");
+   		window.location.href= "/moves/new";
+   	}
 		console.log(data);
 		fenStr = data.position;
 
@@ -137,6 +141,7 @@ function drillNextMove(){
   </script>
 <% end %>
 
+Play the right move!
 <div id="board" style="width: 600px"></div>
 <p>Status: <span id="status"></span></p>
 <p>Fen: <span id="fen"></span></p>
