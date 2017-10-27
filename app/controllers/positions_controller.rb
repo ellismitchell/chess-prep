@@ -9,9 +9,14 @@ class PositionsController < ApplicationController
 
 	def create
 		@position = Position.new position_params
-		@position.user = current_user
-		if @position.save
-			redirect_to '/drill'
+		@existing = Position.find_by(fen: @position.fen, user: current_user)
+		if @existing
+			@existing.update(likelihood: @existing.likelihood + @position.likelihood)
+		else
+			@position.user = current_user
+			if @position.save
+				# redirect_to '/drill'
+			end
 		end
 	end
 

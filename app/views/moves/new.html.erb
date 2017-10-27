@@ -124,7 +124,6 @@
 	  	url: 'https://expl.lichess.org/master?fen='+game.fen(),
 	  	dataType: "json"
 	  }).then(function(lichessData){
-	  	console.log("bitchin");
 	  	movesEl.empty();
 	  	let total = lichessData.white+lichessData.draws+lichessData.black;
 	  	lichessData.moves.forEach((move) => {
