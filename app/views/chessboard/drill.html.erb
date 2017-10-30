@@ -9,12 +9,7 @@
    		$.ajax({
     		url: '/positions',
     		dataType: 'json'
-    	}).then(function() {
-    		$.ajax({
-    		url: '/positions',
-    		dataType: 'json'
     	}).then(renderNewBoard);
-    	});
    	}
 
    	$('#new').html("play the right move");
@@ -115,7 +110,13 @@
 	  pgnEl.html(game.pgn());
 	};
 
+	if (game.turn() == 'b')
+		var orientation = 'black';
+	else
+		var orientation = 'white';
+
 	var cfg = {
+		orientation: orientation,
 	  draggable: true,
 	  position: fenStr,
 	  onDragStart: onDragStart,
@@ -268,7 +269,12 @@ function renderNewBoard(data) {
 	  pgnEl.html(game.pgn());
 	};
 
+	if (game.turn() == 'b')
+		var orientation = 'black';
+	else
+		var orientation = 'white';
 	var cfg = {
+		orientation: orientation,
 	  draggable: true,
 	  position: fenStr,
 	  onDragStart: onDragStart,

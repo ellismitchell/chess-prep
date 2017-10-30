@@ -12,6 +12,10 @@ class MovesController < ApplicationController
 
 	end
 
+	def index
+		@moves = current_user.moves
+	end
+
 	def create
 		@move = Move.new move_params
 		@move.user = current_user
@@ -25,7 +29,7 @@ class MovesController < ApplicationController
 			# 	user: current_user
 			# 	})
 			
-			Position.where({user: current_user, fen: @move.position}).destroy_all
+			Position.where({user: current_user, fen: @move.position}).update_all(learned: true)
 		else
 			flash[:error] = "error saving move"
 		end
