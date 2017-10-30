@@ -1,4 +1,3 @@
-
 class ChessboardController < ApplicationController
 	def chessboard
 		

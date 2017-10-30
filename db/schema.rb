@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171030170851) do
+ActiveRecord::Schema.define(version: 20171030190253) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,8 @@ ActiveRecord::Schema.define(version: 20171030170851) do
     t.integer "streak"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "position_id"
+    t.index ["position_id"], name: "index_moves_on_position_id"
     t.index ["user_id"], name: "index_moves_on_user_id"
   end
 
@@ -38,6 +40,13 @@ ActiveRecord::Schema.define(version: 20171030170851) do
     t.index ["user_id"], name: "index_positions_on_user_id"
   end
 
+  create_table "positions_moves", force: :cascade do |t|
+    t.bigint "position_id"
+    t.bigint "move_id"
+    t.index ["move_id"], name: "index_positions_moves_on_move_id"
+    t.index ["position_id"], name: "index_positions_moves_on_position_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email"
     t.string "password_digest"
@@ -45,6 +54,9 @@ ActiveRecord::Schema.define(version: 20171030170851) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "moves", "positions"
   add_foreign_key "moves", "users"
   add_foreign_key "positions", "users"
+  add_foreign_key "positions_moves", "moves"
+  add_foreign_key "positions_moves", "positions"
 end

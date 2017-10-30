@@ -171,42 +171,46 @@ function renderNewBoard(data) {
 	  }).then(function(lichessData){
 	  	let total = lichessData.white+lichessData.draws+lichessData.black;
 	  	let requests = 0;
-	  	lichessData.moves.forEach((m) => {
-	  		game.move(m.san);
-	  		let pos = game.fen();
-	  		let mTotal = m.white+m.draws+m.black;
-	  		$.ajax({
-	  			url: '/positions',
-	  			type: 'POST',
-	  			data: {
-	  				position: {
-		  				fen: pos,
-		  				likelihood: mTotal/total * data.likelihood
-		  			}
-	  			}
-	  		}).then(() => {
-	  			requests++;
-	  			if (requests >= lichessData.moves.length + 1)
-	  				drillNextMove();
-	  		});
-	  		game.undo();
-	  	});
 	  	$.ajax({
 		  	url: '/moves',
 		  	type: 'POST',
 		  	data: {
 		  		move: {
+		  		position_id: data.id,
 		  		position: prev,
 		  		resulting_position: game.fen(),
 		  		san: move.san,
 		  		likelihood: data.likelihood
 			  	}
 			  }
-		  }).then(() => {
+		  }).then((moveData) => {
 	  			requests++;
 	  			if (requests >= lichessData.moves.length + 1)
 	  				drillNextMove();
+	  			lichessData.moves.forEach((m) => {
+			  		game.move(m.san);
+			  		let pos = game.fen();
+			  		let mTotal = m.white+m.draws+m.black;
+			  		$.ajax({
+			  			url: '/positions',
+			  			type: 'POST',
+			  			data: {
+			  				position: {
+				  				fen: pos,
+				  				likelihood: mTotal/total * data.likelihood
+				  			},
+				  			parent_id: moveData.id
+			  			}
+			  		}).then(() => {
+			  			requests++;
+			  			if (requests >= lichessData.moves.length + 1)
+			  				drillNextMove();
+			  		});
+			  		game.undo();
+	  			});
 	  		});
+	  	
+
 	  });
 
 	  }

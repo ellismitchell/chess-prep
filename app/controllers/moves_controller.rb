@@ -21,6 +21,7 @@ class MovesController < ApplicationController
 		@move.user = current_user
 		@move.due = DateTime.now + 30.seconds
 		@move.streak = 0
+		@move.parent_position = Position.find(@move.position_id)
 		if @move.save
 			flash[:success] = "move saved successfully"
 			# Position.create({
@@ -30,9 +31,16 @@ class MovesController < ApplicationController
 			# 	})
 			
 			Position.where({user: current_user, fen: @move.position}).update_all(learned: true)
+			render :json => @move
 		else
 			flash[:error] = "error saving move"
 		end
+	end
+
+	def update
+		@move = Move.find(params[:id])
+		@move.update move_params
+
 	end
 
 	def correct
@@ -52,6 +60,6 @@ class MovesController < ApplicationController
 	private
 
 	def move_params
-		params.require(:move).permit(:position, :resulting_position, :san, :likelihood, :due, :streak)
+		params.require(:move).permit(:position, :resulting_position, :san, :likelihood, :due, :streak, :position_id)
 	end
 end
