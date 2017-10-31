@@ -12,5 +12,5 @@ class Move < ApplicationRecord
   		self.parent_position.learned = false
   		self.parent_position.save
   	end
-  end
+  end 
 end
