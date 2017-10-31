@@ -130,8 +130,50 @@
 
 function renderNewBoard(data) {
 	$('#new').html("add a new move");
-		console.log(data);
-		var fenStr = data.fen;
+	console.log(data);
+	if (!data) {
+		var game = new Chess();
+		$.ajax({
+				url: '/positions',
+				type: 'POST',
+				data: {
+			  				position: {
+				  				fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+				  				likelihood: 1
+				  			}
+			  			}
+			})
+		$.ajax({
+			url: 'https://expl.lichess.org/master?fen=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+			dataType: 'json'
+		}).then(function(lichessData){
+			let total = lichessData.white+lichessData.draws+lichessData.black;
+			var requests = 0;
+			lichessData.moves.forEach((m) => {
+			  		game.move(m.san);
+			  		let pos = game.fen();
+			  		let mTotal = m.white+m.draws+m.black;
+			  		$.ajax({
+			  			url: '/positions',
+			  			type: 'POST',
+			  			data: {
+			  				position: {
+				  				fen: pos,
+				  				likelihood: mTotal/total
+				  			}
+			  			}
+			  		}).then(() => {
+			  			requests++;
+			  			if (requests >= lichessData.moves.length)
+			  				drillNextMove();
+			  		});
+			  		game.undo();
+	  			});
+	  		});
+	}
+	else {
+
+	var fenStr = data.fen;
 
 	var board,
 	  game = new Chess(fenStr),
@@ -288,6 +330,7 @@ function renderNewBoard(data) {
 	board = ChessBoard('board', cfg);
 
 	updateStatus();
+}
 }  
 
 function drillNextMove(){

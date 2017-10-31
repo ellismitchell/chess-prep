@@ -20,7 +20,9 @@ class PositionsController < ApplicationController
 		else
 			@position.user = current_user
 			@position.learned = false
-			@position.parent_moves << Move.find(params[:parent_id])
+			if (params[:parent_id])
+				@position.parent_moves << Move.find(params[:parent_id])
+			end
 			if @position.save
 				# redirect_to '/drill'
 			end
