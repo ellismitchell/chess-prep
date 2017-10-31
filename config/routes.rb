@@ -2,6 +2,7 @@ Rails.application.routes.draw do
 	get '/chessboard', to: 'chessboard#chessboard'
 	get '/position', to: 'chessboard#position'
 	get '/drill', to: 'chessboard#drill'
+  get '/edit', to: 'chessboard#edit'
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   root to: 'chessboard#chessboard'
@@ -17,6 +18,8 @@ Rails.application.routes.draw do
   get '/moves/new', to: 'moves#new', as: 'new_move'
   post '/moves/:id/correct', to: 'moves#correct'
   post '/moves/:id/incorrect', to: 'moves#incorrect'
+  get '/moves/position', to: 'moves#move_at_position'
+  post '/moves/delete', to: 'moves#destroy'
 
   get '/positions', to: 'positions#index', as: 'positions'
 

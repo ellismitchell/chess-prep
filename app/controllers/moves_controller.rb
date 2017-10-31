@@ -12,6 +12,11 @@ class MovesController < ApplicationController
 
 	end
 
+	def move_at_position
+		@move = Move.find_by(user: current_user, position: params[:fen])
+		render :json => @move
+	end
+
 	def index
 		@moves = current_user.moves
 	end
@@ -41,6 +46,11 @@ class MovesController < ApplicationController
 		@move = Move.find(params[:id])
 		@move.update move_params
 
+	end
+
+	def destroy
+		@move = Move.find_by(user: current_user, position: params[:fen])
+		@move.destroy
 	end
 
 	def correct
