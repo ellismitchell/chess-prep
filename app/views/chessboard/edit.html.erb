@@ -1,6 +1,6 @@
 <% content_for :js do %>
   <script>
-    $(document).on('turbolinks:load',function(){
+    $(document).ready(function(){
     	renderBoard();
 });
    
@@ -157,4 +157,4 @@ function renderBoard() {
 
 <div id="board" style="width: 600px"></div>
 <div id="right"><div id="correct"></div><div id="message"></div><div id="moves"></div></div>
-<button id="back">Back</button>
+<div id="bottom"><button id="back">Back</button><%= link_to "Back to Drill", drill_path %></div>

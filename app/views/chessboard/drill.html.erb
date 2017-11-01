@@ -1,6 +1,6 @@
 <% content_for :js do %>
   <script>
-    $(document).on('turbolinks:load',function(){
+    $(document).ready(function(){
 	var fenStr = "";
 	drillNextMove();
 });
@@ -359,3 +359,4 @@ function drillNextMove(){
 <!-- <div id="new">Play the right move!</div>
  --><div id="board" style="width: 600px"></div>
 <div id="right"><div id="correct"></div><div id="message"></div><div id="moves"></div></div>
+<div id="bottom"><%= link_to "Edit Moves", edit_path %></div>
