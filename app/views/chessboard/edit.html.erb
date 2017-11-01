@@ -96,10 +96,10 @@ function renderBoard() {
 	  	dataType: "json"
 	  }).then(function(lichessData){
 	  	movesEl.empty();
-	  	let total = lichessData.white+lichessData.draws+lichessData.black;
+	  	var total = lichessData.white+lichessData.draws+lichessData.black;
 	  	lichessData.moves.forEach((move) => {
-	  		let moveTotal = move.white+move.draws+move.black;
-	  		let percent = moveTotal/total * 100;
+	  		var moveTotal = move.white+move.draws+move.black;
+	  		var percent = moveTotal/total * 100;
 	  		if (percent > 0.1) {
 	  			if (moveData && move.san == moveData.san)
 	  				movesEl.append("<p><b>"+move.san+": "+percent.toFixed(1)+"%</b> <button class='delete'>Delete</button></p>");
