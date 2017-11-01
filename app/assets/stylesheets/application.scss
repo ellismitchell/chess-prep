@@ -12,5 +12,58 @@
  *
  */
 
+ /*
+ *= require jquery-ui
+ */
+
 @import "bootstrap";
-@import "chessboard-0.3.0.min"
+@import "chessboard-0.3.0.min";
+
+body {
+	background-color: skyblue;
+}
+
+.container {
+	margin-left: auto;
+	margin-right: auto;
+	width: auto;
+	min-width: 1100px;
+}
+
+.nav {
+	display: block;
+}
+
+#right {
+	/*float:right;*/
+	display: inline-block;
+	background-color: white;
+	border: 2px solid;
+	height: 596px;
+	width: 300px;
+	padding-left: 20px;
+	padding-top: 20px;
+	margin-left: 20px;
+}
+
+.new {
+	background-color: skyblue;
+}
+
+.drill {
+	background-color: skyblue;
+}
+
+#board {
+	float:left;
+	display: inline;
+}
+
+#correct {
+	font-weight: bold;
+}
+
+#back {
+	display: block;
+}
+

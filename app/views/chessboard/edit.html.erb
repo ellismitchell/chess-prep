@@ -1,6 +1,6 @@
 <% content_for :js do %>
   <script>
-    $(document).ready(function(){
+    $(document).on('turbolinks:load',function(){
     	renderBoard();
 });
    
@@ -15,6 +15,12 @@ function renderBoard() {
 	  fenEl = $('#fen'),
 	  pgnEl = $('#pgn'),
 	  movesEl = $('#moves');
+
+	  $('#back').click(function() {
+	  	game.undo();
+	  	board.position(game.fen());
+	  	updateStatus();
+	  });
 
 
 
@@ -96,7 +102,7 @@ function renderBoard() {
 	  		let percent = moveTotal/total * 100;
 	  		if (percent > 0.1) {
 	  			if (moveData && move.san == moveData.san)
-	  				movesEl.append("<p><b>"+move.san+": "+percent.toFixed(1)+"%</b></p><button class='delete'>Delete</button>");
+	  				movesEl.append("<p><b>"+move.san+": "+percent.toFixed(1)+"%</b> <button class='delete'>Delete</button></p>");
 	  			else
 	  				movesEl.append("<p>"+move.san+": "+percent.toFixed(1)+"%</p>");
 	  		}
@@ -150,7 +156,5 @@ function renderBoard() {
 <% end %>
 
 <div id="board" style="width: 600px"></div>
-<p>Status: <span id="status"></span></p>
-<p>Fen: <span id="fen"></span></p>
-<div id="user-move"></div>
-<div id="moves"></div>
+<div id="right"><div id="correct"></div><div id="message"></div><div id="moves"></div></div>
+<button id="back">Back</button>

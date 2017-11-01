@@ -15,7 +15,7 @@ class PositionsController < ApplicationController
 			@existing.update(likelihood: @existing.likelihood + @position.likelihood)
 			@existing.parent_moves << Move.find(params[:parent_id])
 		elsif @move
-			@move.update(likelihood: @move.likelihood + @position.likelihood)
+			@move.update_likelihood((@move.likelihood+@position.likelihood)/@move.likelihood)
 			# update all the dependent positions likelihood
 		else
 			@position.user = current_user

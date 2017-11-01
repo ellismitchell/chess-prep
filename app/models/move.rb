@@ -6,6 +6,14 @@ class Move < ApplicationRecord
   validates :position, uniqueness: { scope: :user_id }
   before_destroy :reset_parent
 
+  def update_likelihood ratio
+  	self.resulting_positions.each do |p|
+  		p.update_likelihood ratio
+  	end
+  	self.likelihood *= ratio
+  	self.save
+  end
+
   private
   def reset_parent
   	if self.parent_position.moves.length <= 1

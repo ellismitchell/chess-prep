@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
 	get '/chessboard', to: 'chessboard#chessboard'
 	get '/position', to: 'chessboard#position'
-	get '/drill', to: 'chessboard#drill'
-  get '/edit', to: 'chessboard#edit'
+	get '/drill', to: 'chessboard#drill', as: 'drill'
+  get '/edit', to: 'chessboard#edit', as: 'edit'
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   root to: 'chessboard#chessboard'

@@ -1,4 +1,5 @@
 class MovesController < ApplicationController
+	include ActionView::Helpers::DateHelper
 	def next_due_move
 		@move = current_user.moves.min_by {|m| m.due}
 		if !@move or @move.due > DateTime.now
@@ -42,12 +43,6 @@ class MovesController < ApplicationController
 		end
 	end
 
-	def update
-		@move = Move.find(params[:id])
-		@move.update move_params
-
-	end
-
 	def destroy
 		@move = Move.find_by(user: current_user, position: params[:fen])
 		@move.destroy
@@ -58,6 +53,7 @@ class MovesController < ApplicationController
 		@move.streak += 1
 		@move.due = DateTime.now + 30.seconds * 5**@move.streak
 		@move.save
+		render :json => {time: distance_of_time_in_words(DateTime.now, @move.due)}
 	end
 
 	def incorrect

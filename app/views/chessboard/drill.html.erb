@@ -1,6 +1,6 @@
 <% content_for :js do %>
   <script>
-    $(document).ready(function(){
+    $(document).on('turbolinks:load',function(){
 	var fenStr = "";
 	drillNextMove();
 });
@@ -12,9 +12,11 @@
     	}).then(renderNewBoard);
    	}
 
-   	$('#new').html("play the right move");
+   	$('#message').html("Play the right move!");
+
+	$('body').removeClass("new");
+	$('body').addClass("drill");
 		fenStr = data.position;
-		$('#new').append(fenStr);
 	var board,
 	  game = new Chess(fenStr),
 
@@ -48,18 +50,25 @@
 	  	return 'snapback';
 	  else {
 	  	if (move.san == data.san) {
-	  		console.log("correct! next due in " + 30 * Math.pow(5,data.streak));
 	  		$.ajax({
 	  			url: '/moves/'+data.id+'/correct',
 	  			type: 'POST'
-	  		}).then(drillNextMove);
+	  		}).then(function(time) {
+	  			$('#correct').html("Correct! Next due in "+time.time);
+	  			$('#right').effect("highlight", {}, 1000);
+	  			drillNextMove();
+	  		});
 	  	}
 	  	else {
-	  		console.log("incorrect! correct was " + data.san);
 	  		$.ajax({
 	  			url: '/moves/'+data.id+'/incorrect',
 	  			type: 'POST'
-	  		}).then(drillNextMove);
+	  		}).then(function() {
+	  			$('#correct').html("Incorrect! Correct was " + data.san + ". Next due in 30 seconds.");
+	  			$('#right').effect("highlight", {color: '#ff9999'}, 1000);
+
+	  			drillNextMove();
+	  		});
 	  	}
 
 	  }
@@ -129,7 +138,9 @@
 }
 
 function renderNewBoard(data) {
-	$('#new').html("add a new move");
+	$('#message').html("Add a new move!");
+	$('body').removeClass("drill");
+	$('body').addClass("new");
 	console.log(data);
 	if (!data) {
 		var game = new Chess();
@@ -345,8 +356,6 @@ function drillNextMove(){
   </script>
 <% end %>
 
-<div id="new">Play the right move!</div>
-<div id="board" style="width: 600px"></div>
-<p>Status: <span id="status"></span></p>
-<p>Fen: <span id="fen"></span></p>
-<div id="moves"></div>
+<!-- <div id="new">Play the right move!</div>
+ --><div id="board" style="width: 600px"></div>
+<div id="right"><div id="correct"></div><div id="message"></div><div id="moves"></div></div>
