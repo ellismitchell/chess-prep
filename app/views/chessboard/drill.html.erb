@@ -37,7 +37,7 @@
 
 	var onDrop = function(source, target) {
 	  // see if the move is legal
-	  let prev = game.fen();
+	  var prev = game.fen();
 	  var move = game.move({
 	    from: source,
 	    to: target,
@@ -158,12 +158,12 @@ function renderNewBoard(data) {
 			url: 'https://expl.lichess.org/master?fen=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
 			dataType: 'json'
 		}).then(function(lichessData){
-			let total = lichessData.white+lichessData.draws+lichessData.black;
+			var total = lichessData.white+lichessData.draws+lichessData.black;
 			var requests = 0;
 			lichessData.moves.forEach((m) => {
 			  		game.move(m.san);
-			  		let pos = game.fen();
-			  		let mTotal = m.white+m.draws+m.black;
+			  		var pos = game.fen();
+			  		var mTotal = m.white+m.draws+m.black;
 			  		$.ajax({
 			  			url: '/positions',
 			  			type: 'POST',
@@ -206,7 +206,7 @@ function renderNewBoard(data) {
 
 	var onDrop = function(source, target) {
 	  // see if the move is legal
-	  let prev = game.fen();
+	  var prev = game.fen();
 	  var move = game.move({
 	    from: source,
 	    to: target,
@@ -222,8 +222,8 @@ function renderNewBoard(data) {
 	  	url: 'https://expl.lichess.org/master?fen='+game.fen(),
 	  	dataType: "json"
 	  }).then(function(lichessData){
-	  	let total = lichessData.white+lichessData.draws+lichessData.black;
-	  	let requests = 0;
+	  	var total = lichessData.white+lichessData.draws+lichessData.black;
+	  	var requests = 0;
 	  	$.ajax({
 		  	url: '/moves',
 		  	type: 'POST',
@@ -242,8 +242,8 @@ function renderNewBoard(data) {
 	  				drillNextMove();
 	  			lichessData.moves.forEach((m) => {
 			  		game.move(m.san);
-			  		let pos = game.fen();
-			  		let mTotal = m.white+m.draws+m.black;
+			  		var pos = game.fen();
+			  		var mTotal = m.white+m.draws+m.black;
 			  		$.ajax({
 			  			url: '/positions',
 			  			type: 'POST',
@@ -310,10 +310,10 @@ function renderNewBoard(data) {
 	  	dataType: "json"
 	  }).then(function(lichessData){
 	  	movesEl.empty();
-	  	let total = lichessData.white+lichessData.draws+lichessData.black;
+	  	var total = lichessData.white+lichessData.draws+lichessData.black;
 	  	lichessData.moves.forEach((move) => {
-	  		let moveTotal = move.white+move.draws+move.black;
-	  		let percent = moveTotal/total * 100;
+	  		var moveTotal = move.white+move.draws+move.black;
+	  		var percent = moveTotal/total * 100;
 	  		if (percent > 0.1)
 	  			movesEl.append("<p>"+move.san+": "+percent.toFixed(1)+"%</p>");
 	  	});
