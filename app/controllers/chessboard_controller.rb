@@ -1,7 +1,4 @@
 class ChessboardController < ApplicationController
-	def chessboard
-		
-	end
 
 	def drill
 		if !current_user

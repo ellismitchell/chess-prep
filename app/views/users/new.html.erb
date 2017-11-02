@@ -1,4 +1,3 @@
-
 <%= form_for @user do |f| %>
   <div>
     <%= f.email_field :email, placeholder: "Email" %>
@@ -10,7 +9,6 @@
 <% end %>
 
 <%= flash[:error] %>
-
 
 <p>Already have an account? <%= link_to "Log in", "/login" %></p>
 

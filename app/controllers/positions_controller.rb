@@ -16,16 +16,13 @@ class PositionsController < ApplicationController
 			@existing.parent_moves << Move.find(params[:parent_id])
 		elsif @move
 			@move.update_likelihood((@move.likelihood+@position.likelihood)/@move.likelihood)
-			# update all the dependent positions likelihood
 		else
 			@position.user = current_user
 			@position.learned = false
 			if (params[:parent_id])
 				@position.parent_moves << Move.find(params[:parent_id])
 			end
-			if @position.save
-				# redirect_to '/drill'
-			end
+			@position.save
 		end
 	end
 

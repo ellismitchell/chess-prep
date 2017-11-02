@@ -1,364 +1,252 @@
 <% content_for :js do %>
-  <script>
-    $(document).ready(function(){
-	var fenStr = "";
-	drillNextMove();
-});
-   function renderBoard(data) {
-   	if (data.move == "no move"){
-   		$.ajax({
-    		url: '/positions',
-    		dataType: 'json'
-    	}).then(renderNewBoard);
-   	}
+	<script>
+		$(document).ready(function(){
+			var fenStr = "";
+			drillNextMove();
+		});
+		function renderBoard(data) {
+			if (data.move == "no move"){
+				$.ajax({
+					url: '/positions',
+					dataType: 'json'
+				}).then(renderNewBoard);
+			}
 
-   	$('#message').html("Play the right move!");
+			$('#message').html("Play the right move!");
+			fenStr = data.position;
+			var board,
+			game = new Chess(fenStr),
+			movesEl = $('#moves');
+			movesEl.empty();
+			var onDragStart = function(source, piece, position, orientation) {
+				if (game.game_over() === true ||
+					(game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+					(game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+					return false;
+				}
+			};
 
-	$('body').removeClass("new");
-	$('body').addClass("drill");
-		fenStr = data.position;
-	var board,
-	  game = new Chess(fenStr),
-
-	  statusEl = $('#status'),
-	  fenEl = $('#fen'),
-	  pgnEl = $('#pgn'),
-	  movesEl = $('#moves');
-
-	// do not pick up pieces if the game is over
-	// only pick up pieces for the side to move
-	var onDragStart = function(source, piece, position, orientation) {
-	  if (game.game_over() === true ||
-	      (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-	      (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-	    return false;
-	  }
-	};
-
-	var onDrop = function(source, target) {
-	  // see if the move is legal
-	  var prev = game.fen();
-	  var move = game.move({
-	    from: source,
-	    to: target,
-	    promotion: 'q' // NOTE: always promote to a queen for example simplicity
-	  });
-
-
-	  // illegal move
-	  if (move === null)
-	  	return 'snapback';
-	  else {
-	  	if (move.san == data.san) {
-	  		$.ajax({
-	  			url: '/moves/'+data.id+'/correct',
-	  			type: 'POST'
-	  		}).then(function(time) {
-	  			$('#correct').html("Correct! Next due in "+time.time);
-	  			$('#right').effect("highlight", {}, 1000);
-	  			drillNextMove();
-	  		});
-	  	}
-	  	else {
-	  		$.ajax({
-	  			url: '/moves/'+data.id+'/incorrect',
-	  			type: 'POST'
-	  		}).then(function() {
-	  			$('#correct').html("Incorrect! Correct was " + data.san + ". Next due in 30 seconds.");
-	  			$('#right').effect("highlight", {color: '#ff9999'}, 1000);
-
-	  			drillNextMove();
-	  		});
-	  	}
-
-	  }
-
-	  // updateStatus();
-	};
-
-	// update the board position after the piece snap 
-	// for castling, en passant, pawn promotion
-	var onSnapEnd = function() {
-	  board.position(game.fen());
-	};
-
-	var updateStatus = function() {
-	  var status = '';
-
-	  var moveColor = 'White';
-	  if (game.turn() === 'b') {
-	    moveColor = 'Black';
-	  }
-
-	  // checkmate?
-	  if (game.in_checkmate() === true) {
-	    status = 'Game over, ' + moveColor + ' is in checkmate.';
-	  }
-
-	  // draw?
-	  else if (game.in_draw() === true) {
-	    status = 'Game over, drawn position';
-	  }
-
-	  // game still on
-	  else {
-	    status = moveColor + ' to move';
-
-	    // check?
-	    if (game.in_check() === true) {
-	      status += ', ' + moveColor + ' is in check';
-	    }
-	  }
-
-	  movesEl.empty();
-
-
-
-	  statusEl.html(status);
-	  fenEl.html(game.fen());
-	  pgnEl.html(game.pgn());
-	};
-
-	if (game.turn() == 'b')
-		var orientation = 'black';
-	else
-		var orientation = 'white';
-
-	var cfg = {
-		orientation: orientation,
-	  draggable: true,
-	  position: fenStr,
-	  onDragStart: onDragStart,
-	  onDrop: onDrop,
-	  onSnapEnd: onSnapEnd
-	};
-	board = ChessBoard('board', cfg);
-
-	updateStatus();
-}
-
-function renderNewBoard(data) {
-	$('#message').html("Add a new move!");
-	$('body').removeClass("drill");
-	$('body').addClass("new");
-	console.log(data);
-	if (!data) {
-		var game = new Chess();
-		$.ajax({
-				url: '/positions',
-				type: 'POST',
-				data: {
-			  				position: {
-				  				fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-				  				likelihood: 1
-				  			}
-			  			}
-			})
-		$.ajax({
-			url: 'https://expl.lichess.org/master?fen=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-			dataType: 'json'
-		}).then(function(lichessData){
-			var total = lichessData.white+lichessData.draws+lichessData.black;
-			var requests = 0;
-			lichessData.moves.forEach((m) => {
-			  		game.move(m.san);
-			  		var pos = game.fen();
-			  		var mTotal = m.white+m.draws+m.black;
+			var onDrop = function(source, target) {
+			  var prev = game.fen();
+			  var move = game.move({
+			  	from: source,
+			  	to: target,
+			    promotion: 'q'
+			  });
+			  if (move === null)
+			  	return 'snapback';
+			  else {
+			  	if (move.san == data.san) {
 			  		$.ajax({
-			  			url: '/positions',
-			  			type: 'POST',
-			  			data: {
-			  				position: {
-				  				fen: pos,
-				  				likelihood: mTotal/total
-				  			}
-			  			}
-			  		}).then(() => {
-			  			requests++;
-			  			if (requests >= lichessData.moves.length)
-			  				drillNextMove();
+			  			url: '/moves/'+data.id+'/correct',
+			  			type: 'POST'
+			  		}).then(function(time) {
+			  			$('#correct').html("Correct! Next due in "+time.time);
+			  			$('#right').effect("highlight", {}, 1000);
+			  			drillNextMove();
 			  		});
-			  		game.undo();
-	  			});
-	  		});
-	}
-	else {
-
-	var fenStr = data.fen;
-
-	var board,
-	  game = new Chess(fenStr),
-
-	  statusEl = $('#status'),
-	  fenEl = $('#fen'),
-	  pgnEl = $('#pgn'),
-	  movesEl = $('#moves');
-
-	// do not pick up pieces if the game is over
-	// only pick up pieces for the side to move
-	var onDragStart = function(source, piece, position, orientation) {
-	  if (game.game_over() === true ||
-	      (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-	      (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-	    return false;
-	  }
-	};
-
-	var onDrop = function(source, target) {
-	  // see if the move is legal
-	  var prev = game.fen();
-	  var move = game.move({
-	    from: source,
-	    to: target,
-	    promotion: 'q' // NOTE: always promote to a queen for example simplicity
-	  });
-
-
-	  // illegal move
-	  if (move === null)
-	  	return 'snapback';
-	  else {
-	  	$.ajax({
-	  	url: 'https://expl.lichess.org/master?fen='+game.fen(),
-	  	dataType: "json"
-	  }).then(function(lichessData){
-	  	var total = lichessData.white+lichessData.draws+lichessData.black;
-	  	var requests = 0;
-	  	$.ajax({
-		  	url: '/moves',
-		  	type: 'POST',
-		  	data: {
-		  		move: {
-		  		position_id: data.id,
-		  		position: prev,
-		  		resulting_position: game.fen(),
-		  		san: move.san,
-		  		likelihood: data.likelihood
+			  	}
+			  	else {
+			  		$.ajax({
+			  			url: '/moves/'+data.id+'/incorrect',
+			  			type: 'POST'
+			  		}).then(function() {
+			  			$('#correct').html("Incorrect! Correct was " + data.san + ". Next due in 30 seconds.");
+			  			$('#right').effect("highlight", {color: '#ff9999'}, 1000);
+			  			drillNextMove();
+			  		});
 			  	}
 			  }
-		  }).then((moveData) => {
-	  			requests++;
-	  			if (requests >= lichessData.moves.length + 1)
-	  				drillNextMove();
-	  			lichessData.moves.forEach((m) => {
-			  		game.move(m.san);
-			  		var pos = game.fen();
-			  		var mTotal = m.white+m.draws+m.black;
-			  		$.ajax({
-			  			url: '/positions',
-			  			type: 'POST',
-			  			data: {
-			  				position: {
-				  				fen: pos,
-				  				likelihood: mTotal/total * data.likelihood
-				  			},
-				  			parent_id: moveData.id
-			  			}
-			  		}).then(() => {
-			  			requests++;
-			  			if (requests >= lichessData.moves.length + 1) {
-			  				$('#correct').empty();
-			  				drillNextMove();
-			  			}
-			  		});
-			  		game.undo();
-	  			});
-	  		});
-	  	
+			};
 
-	  });
+			var onSnapEnd = function() {
+				board.position(game.fen());
+			};
 
-	  }
+			if (game.turn() == 'b')
+				var orientation = 'black';
+			else
+				var orientation = 'white';
 
-	  // updateStatus();
-	};
+			var cfg = {
+				orientation: orientation,
+				draggable: true,
+				position: fenStr,
+				onDragStart: onDragStart,
+				onDrop: onDrop,
+				onSnapEnd: onSnapEnd
+			};
+			board = ChessBoard('board', cfg);
+		}
 
-	// update the board position after the piece snap 
-	// for castling, en passant, pawn promotion
-	var onSnapEnd = function() {
-	  board.position(game.fen());
-	};
+		function renderNewBoard(data) {
+			$('#message').html("Add a new move!");
+			if (!data) {
+				var game = new Chess();
+				$.ajax({
+					url: '/positions',
+					type: 'POST',
+					data: {
+						position: {
+							fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+							likelihood: 1
+						}
+					}
+				})
+				$.ajax({
+					url: 'https://expl.lichess.org/master?fen=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+					dataType: 'json'
+				}).then(function(lichessData){
+					var total = lichessData.white+lichessData.draws+lichessData.black;
+					var requests = 0;
+					lichessData.moves.forEach((m) => {
+						game.move(m.san);
+						var pos = game.fen();
+						var mTotal = m.white+m.draws+m.black;
+						$.ajax({
+							url: '/positions',
+							type: 'POST',
+							data: {
+								position: {
+									fen: pos,
+									likelihood: mTotal/total
+								}
+							}
+						}).then(() => {
+							requests++;
+							if (requests >= lichessData.moves.length)
+								drillNextMove();
+						});
+						game.undo();
+					});
+				});
+			}
+			else {
+				var fenStr = data.fen;
+				var board,
+				game = new Chess(fenStr),
+				statusEl = $('#status'),
+				fenEl = $('#fen'),
+				pgnEl = $('#pgn'),
+				movesEl = $('#moves');
 
-	var updateStatus = function() {
-	  var status = '';
+				var onDragStart = function(source, piece, position, orientation) {
+					if (game.game_over() === true ||
+						(game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+						(game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+						return false;
+					}
+				};
 
-	  var moveColor = 'White';
-	  if (game.turn() === 'b') {
-	    moveColor = 'Black';
-	  }
+				var onDrop = function(source, target) {
+				  var prev = game.fen();
+				  var move = game.move({
+				  	from: source,
+				  	to: target,
+				    promotion: 'q'
+				  });
 
-	  // checkmate?
-	  if (game.in_checkmate() === true) {
-	    status = 'Game over, ' + moveColor + ' is in checkmate.';
-	  }
+				  if (move === null)
+				  	return 'snapback';
+				  else {
+				  	$.ajax({
+				  		url: 'https://expl.lichess.org/master?fen='+game.fen(),
+				  		dataType: "json"
+				  	}).then(function(lichessData){
+				  		var total = lichessData.white+lichessData.draws+lichessData.black;
+				  		var requests = 0;
+				  		$.ajax({
+				  			url: '/moves',
+				  			type: 'POST',
+				  			data: {
+				  				move: {
+				  					position_id: data.id,
+				  					position: prev,
+				  					resulting_position: game.fen(),
+				  					san: move.san,
+				  					likelihood: data.likelihood
+				  				}
+				  			}
+				  		}).then((moveData) => {
+				  			requests++;
+				  			if (requests >= lichessData.moves.length + 1)
+				  				drillNextMove();
+				  			lichessData.moves.forEach((m) => {
+				  				game.move(m.san);
+				  				var pos = game.fen();
+				  				var mTotal = m.white+m.draws+m.black;
+				  				$.ajax({
+				  					url: '/positions',
+				  					type: 'POST',
+				  					data: {
+				  						position: {
+				  							fen: pos,
+				  							likelihood: mTotal/total * data.likelihood
+				  						},
+				  						parent_id: moveData.id
+				  					}
+				  				}).then(() => {
+				  					requests++;
+				  					if (requests >= lichessData.moves.length + 1) {
+				  						$('#correct').empty();
+				  						drillNextMove();
+				  					}
+				  				});
+				  				game.undo();
+				  			});
+				  		});
+				  	});
+				  }
+				};
 
-	  // draw?
-	  else if (game.in_draw() === true) {
-	    status = 'Game over, drawn position';
-	  }
+				var onSnapEnd = function() {
+					board.position(game.fen());
+				};
 
-	  // game still on
-	  else {
-	    status = moveColor + ' to move';
+				if (game.turn() == 'b')
+					var orientation = 'black';
+				else
+					var orientation = 'white';
+				var cfg = {
+					orientation: orientation,
+					draggable: true,
+					position: fenStr,
+					onDragStart: onDragStart,
+					onDrop: onDrop,
+					onSnapEnd: onSnapEnd
+				};
+				board = ChessBoard('board', cfg);
+				$.ajax({
+				  	url: 'https://expl.lichess.org/master?fen='+game.fen(),
+				  	dataType: "json"
+				  }).then(function(lichessData){
+				  	movesEl.empty();
+				  	var total = lichessData.white+lichessData.draws+lichessData.black;
+				  	lichessData.moves.forEach((move) => {
+				  		var moveTotal = move.white+move.draws+move.black;
+				  		var percent = moveTotal/total * 100;
+				  		if (percent > 0.1)
+				  			movesEl.append("<p>"+move.san+": "+percent.toFixed(1)+"%</p>");
+				  	});
+				  });
+			}
+		}  
 
-	    // check?
-	    if (game.in_check() === true) {
-	      status += ', ' + moveColor + ' is in check';
-	    }
-	  }
+		function drillNextMove(){
+			$.ajax({
+				url: "/moves",
+				dataType: "json"
+			}).then(renderBoard);
+		}
 
-	  $.ajax({
-	  	url: 'https://expl.lichess.org/master?fen='+game.fen(),
-	  	dataType: "json"
-	  }).then(function(lichessData){
-	  	movesEl.empty();
-	  	var total = lichessData.white+lichessData.draws+lichessData.black;
-	  	lichessData.moves.forEach((move) => {
-	  		var moveTotal = move.white+move.draws+move.black;
-	  		var percent = moveTotal/total * 100;
-	  		if (percent > 0.1)
-	  			movesEl.append("<p>"+move.san+": "+percent.toFixed(1)+"%</p>");
-	  	});
-	  });
-
-
-
-	  statusEl.html(status);
-	  fenEl.html(game.fen());
-	  pgnEl.html(game.pgn());
-	};
-
-	if (game.turn() == 'b')
-		var orientation = 'black';
-	else
-		var orientation = 'white';
-	var cfg = {
-		orientation: orientation,
-	  draggable: true,
-	  position: fenStr,
-	  onDragStart: onDragStart,
-	  onDrop: onDrop,
-	  onSnapEnd: onSnapEnd
-	};
-	board = ChessBoard('board', cfg);
-
-	updateStatus();
-}
-}  
-
-function drillNextMove(){
-	$.ajax({
-		url: "/moves",
-		dataType: "json"
-	}).then(renderBoard);
-}
-
-
-
-  </script>
+	</script>
 <% end %>
-
-<!-- <div id="new">Play the right move!</div>
- --><div id="board" style="width: 600px"></div>
-<div id="right"><div id="correct"></div><div id="message"></div><div id="moves"></div></div>
-<div id="bottom"><%= link_to "Edit Moves", edit_path %></div>
+<div id="board" style="width: 600px"></div>
+<div id="right">
+	<div id="correct"></div>
+	<div id="message"></div>
+	<div id="moves"></div>
+</div>
+<div id="bottom">
+	<%= link_to "Edit Moves", edit_path %>
+</div>
