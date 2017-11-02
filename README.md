@@ -8,7 +8,7 @@ After you choose your moves, you will be drilled on those moves using a method c
 
 As you practice your moves, ChessPrep will calculate the most likely positions you are to face based on your previously entered moves. When you no longer have moves to practice, ChessPrep will show you the next most likely position and ask you for a new move. This lets you prioritize and focus on only the most relevant positions and enables you to have a well balanced opening repertoire.
 
-[Heroku link] (https://nameless-gorge-60483.herokuapp.com)
+[Heroku link](https://nameless-gorge-60483.herokuapp.com)
 
 Technologies Used
 
