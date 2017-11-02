@@ -256,8 +256,10 @@ function renderNewBoard(data) {
 			  			}
 			  		}).then(() => {
 			  			requests++;
-			  			if (requests >= lichessData.moves.length + 1)
+			  			if (requests >= lichessData.moves.length + 1) {
+			  				$('#correct').empty();
 			  				drillNextMove();
+			  			}
 			  		});
 			  		game.undo();
 	  			});

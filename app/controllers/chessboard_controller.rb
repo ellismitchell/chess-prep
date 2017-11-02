@@ -4,11 +4,15 @@ class ChessboardController < ApplicationController
 	end
 
 	def drill
-		
+		if !current_user
+			redirect_to '/login'
+		end
 	end
 
 	def edit
-		
+		if !current_user
+			redirect_to '/login'
+		end
 	end
 
 	def position

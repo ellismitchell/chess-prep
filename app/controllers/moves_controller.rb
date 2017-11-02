@@ -29,13 +29,6 @@ class MovesController < ApplicationController
 		@move.streak = 0
 		@move.parent_position = Position.find(@move.position_id)
 		if @move.save
-			flash[:success] = "move saved successfully"
-			# Position.create({
-			# 	fen: @move.resulting_position
-			# 	likelihood: @move.likelihood,
-			# 	user: current_user
-			# 	})
-			
 			Position.where({user: current_user, fen: @move.position}).update_all(learned: true)
 			render :json => @move
 		else

@@ -8,9 +8,10 @@ class SessionsController < ApplicationController
 		@user = User.confirm(user_params)
 		if @user
 			login(@user)
-			flash[:success] = "Logged in successfully as " + @user.email
+			
 			redirect_to root_path
 		else
+			flash[:error] = "Wrong username/password"
 			redirect_to login_path
 		end
 	end

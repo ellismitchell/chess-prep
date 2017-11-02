@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   get '/edit', to: 'chessboard#edit', as: 'edit'
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
-  root to: 'chessboard#chessboard'
+  root to: 'chessboard#drill'
 
   get 'users/new', to: 'users#new', as: 'new_user'
   post '/users', to: 'users#create'

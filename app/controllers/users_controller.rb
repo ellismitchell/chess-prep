@@ -4,15 +4,14 @@ class UsersController < ApplicationController
 	end
 
 	def create
-		@user = User.create(user_params)
-		# Position.create({
-		# 		fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-		# 		likelihood: 1,
-		# 		user: @user,
-		# 		learned: false
-		# 		})
-		login(@user)
-		redirect_to root_path
+		@user = User.new user_params
+		if @user.save
+			login(@user)
+			redirect_to root_path
+		else
+			flash[:error] = @user.errors.full_messages.join(" ")
+			render new_user_path
+		end
 	end
 
 	def user_params

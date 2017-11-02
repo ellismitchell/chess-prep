@@ -6,5 +6,8 @@
   <div>
     <%= f.password_field :password, placeholder: "Password" %>
   </div>
-  <%= f.submit "Sign Up" %>
+  <%= f.submit "Log In" %>
 <% end %>
+<%= flash[:error] %>
+
+<p>Don't have an account? <%= link_to "Sign up", "/users/new" %></p>
