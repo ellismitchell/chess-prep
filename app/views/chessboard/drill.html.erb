@@ -125,9 +125,6 @@
 				var fenStr = data.fen;
 				var board,
 				game = new Chess(fenStr),
-				statusEl = $('#status'),
-				fenEl = $('#fen'),
-				pgnEl = $('#pgn'),
 				movesEl = $('#moves');
 
 				var onDragStart = function(source, piece, position, orientation) {
@@ -148,6 +145,10 @@
 
 				  if (move === null)
 				  	return 'snapback';
+				  else if (!commonMoves.includes(move.san)) {
+				  	game.undo();
+				  	return 'snapback';
+				  }
 				  else {
 				  	$.ajax({
 				  		url: 'https://expl.lichess.org/master?fen='+game.fen(),
@@ -216,6 +217,7 @@
 					onSnapEnd: onSnapEnd
 				};
 				board = ChessBoard('board', cfg);
+				var commonMoves = [];
 				$.ajax({
 				  	url: 'https://expl.lichess.org/master?fen='+game.fen(),
 				  	dataType: "json"
@@ -225,8 +227,10 @@
 				  	lichessData.moves.forEach((move) => {
 				  		var moveTotal = move.white+move.draws+move.black;
 				  		var percent = moveTotal/total * 100;
-				  		if (percent > 0.1)
+				  		if (percent > 0.1){
 				  			movesEl.append("<p>"+move.san+": "+percent.toFixed(1)+"%</p>");
+				  			commonMoves.push(move.san);
+				  		}
 				  	});
 				  });
 			}
