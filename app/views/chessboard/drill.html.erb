@@ -149,7 +149,40 @@
 				  	game.undo();
 				  	return 'snapback';
 				  }
-				  else {
+				  else makeMove(move, prev);
+				};
+
+				$('#right').off('click').on('click', '.move', function(event) {
+					event.preventDefault();
+					game.undo();
+					var prev = game.fen();
+					var from = event.target.id.slice(0,2);
+					var to = event.target.id.slice(2,4);
+					$('.square-'+from).removeClass("highlight");
+					$('.square-'+to).removeClass("highlight");
+					var move = game.move(event.target.id.slice(5));
+					makeMove(move, prev);
+				});
+
+				
+				$('#right').on('mouseenter', '.move', function(event) {
+					var from = event.target.id.slice(0,2);
+					var to = event.target.id.slice(2,4);
+					$('.square-'+from).addClass("highlight");
+					$('.square-'+to).addClass("highlight");
+					board.position(game.fen());
+					
+				});
+				$('#right').on('mouseleave', '.move', function(event) {
+					var from = event.target.id.slice(0,2);
+					var to = event.target.id.slice(2,4);
+					$('.square-'+from).removeClass("highlight");
+					$('.square-'+to).removeClass("highlight");
+					board.position(game.fen());
+				});
+
+
+				var makeMove = function(move, prev) {
 				  	$.ajax({
 				  		url: 'https://expl.lichess.org/master?fen='+game.fen(),
 				  		dataType: "json"
@@ -182,7 +215,7 @@
 				  					data: {
 				  						position: {
 				  							fen: pos,
-				  							likelihood: mTotal/total * data.likelihood
+				  							likelihood: (mTotal/total * data.likelihood) * (1- Math.pow(.5, mTotal))
 				  						},
 				  						parent_id: moveData.id
 				  					}
@@ -198,7 +231,6 @@
 				  		});
 				  	});
 				  }
-				};
 
 				var onSnapEnd = function() {
 					board.position(game.fen());
@@ -228,7 +260,7 @@
 				  		var moveTotal = move.white+move.draws+move.black;
 				  		var percent = moveTotal/total * 100;
 				  		if (percent > 0.1){
-				  			movesEl.append("<p>"+move.san+": "+percent.toFixed(1)+"%</p>");
+				  			movesEl.append("<p><button class='move' id='"+move.uci+"-"+move.san+"'>"+move.san+": "+percent.toFixed(1)+"%</button></p>");
 				  			commonMoves.push(move.san);
 				  		}
 				  	});
