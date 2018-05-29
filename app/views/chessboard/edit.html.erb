@@ -48,7 +48,7 @@
 			  }).then(function(moveData){
 			  	board.position(game.fen());
 			  	$.ajax({
-			  	url: 'https://expl.lichess.org/master?fen='+game.fen(),
+			  	url: 'https://explorer.lichess.ovh/master?fen='+game.fen(),
 			  	dataType: "json"
 				  }).then(function(lichessData){
 				  	movesEl.empty();
