@@ -94,7 +94,7 @@
 					}
 				})
 				$.ajax({
-					url: 'https://expl.lichess.org/master?fen=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+					url: 'https://explorer.lichess.ovh/master?fen=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
 					dataType: 'json'
 				}).then(function(lichessData){
 					var total = lichessData.white+lichessData.draws+lichessData.black;
@@ -184,7 +184,7 @@
 
 				var makeMove = function(move, prev) {
 				  	$.ajax({
-				  		url: 'https://expl.lichess.org/master?fen='+game.fen(),
+				  		url: 'https://explorer.lichess.ovh/master?fen='+game.fen(),
 				  		dataType: "json"
 				  	}).then(function(lichessData){
 				  		var total = lichessData.white+lichessData.draws+lichessData.black;
@@ -251,7 +251,7 @@
 				board = ChessBoard('board', cfg);
 				var commonMoves = [];
 				$.ajax({
-				  	url: 'https://expl.lichess.org/master?fen='+game.fen(),
+				  	url: 'https://explorer.lichess.ovh/master?fen='+game.fen(),
 				  	dataType: "json"
 				  }).then(function(lichessData){
 				  	movesEl.empty();
